@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <decisions>
+        <name>Check_if_Opportunity_is_relted_to_it</name>
+        <label>Check if Opportunity is relted to it</label>
+        <locationX>578</locationX>
+        <locationY>803</locationY>
+        <defaultConnector>
+            <targetReference>Update_Account_as_No_Relation</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_all_opportunities</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Priority_of_Opportunity</targetReference>
+            </connector>
+            <label>If Present</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Priority_of_Opportunity</name>
+        <label>Check Priority of Opportunity</label>
+        <locationX>380</locationX>
+        <locationY>911</locationY>
+        <defaultConnector>
+            <targetReference>Update_Account_as_Existing_Client</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Priortity_is_1_or_2</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_all_opportunities.Opporunity_Priority__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_all_opportunities.Opporunity_Priority__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>2.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Account_as_No_Relation_1</targetReference>
+            </connector>
+            <label>If Priortity is 1 or 2</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Stage_Of_Opportunity</name>
+        <label>Check Stage Of Opportunity</label>
+        <locationX>578</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Qualify</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Opportunity Identification Stage (Lead Qualified)</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>0% - Qualified but bills to be received</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Campaign</targetReference>
+            </connector>
+            <label>If Qualify</label>
+        </rules>
+        <rules>
+            <name>If_Prospect</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>10% (BANT Qualified)</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>40% (Proposal Submitted)</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>80% (Waiting For The Final Go-Ahead)</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>60% - In Discussions and Under Followup</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>90% - Agreement signed &amp; billing transition pending</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>5% - Dormant after sharing the estimates &amp; proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>10% - Bills received &amp; proposal/estimates to be shared</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>40% - Proposal shared &amp; under FUP</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>80% - Got a go-ahead &amp; agreement shared</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Copy_1_of_Update_Campaign</targetReference>
+            </connector>
+            <label>If Prospect</label>
+        </rules>
+        <rules>
+            <name>If_Closed_Won</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed Won</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>100% - Onboarded (Won)</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Copy_2_of_Update_Campaign</targetReference>
+            </connector>
+            <label>If Closed Won</label>
+        </rules>
+        <rules>
+            <name>Closed_Lost</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed Lost</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Copy_3_of_Update_Campaign</targetReference>
+            </connector>
+            <label>Closed Lost</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>closedLostSub</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.Campaign__r.Closed_Lost__c} - 1</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>closedWonSub</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.Campaign__r.Closed_Won__c} - 1</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>prospectSub</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.Campaign__r.New_Prospect__c} - 1</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>salSub</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.Campaign__r.SAL__c} - 1</expression>
+        <scale>0</scale>
+    </formulas>
+    <interviewLabel>On Delete Opportunity {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>On Delete Opportunity</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Account_of_this_related_opportunity</name>
+        <label>Get Account of this related opportunity</label>
+        <locationX>578</locationX>
+        <locationY>587</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_all_opportunities</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_all_opportunities</name>
+        <label>Get all opportunities</label>
+        <locationX>578</locationX>
+        <locationY>695</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_if_Opportunity_is_relted_to_it</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AccountId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Account_of_this_related_opportunity.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <sortField>Opporunity_Priority__c</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Copy_1_of_Update_Campaign</name>
+        <label>Copy 1 of Update Campaign</label>
+        <locationX>314</locationX>
+        <locationY>395</locationY>
+        <connector>
+            <targetReference>Get_Account_of_this_related_opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Campaign__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>New_Prospect__c</field>
+            <value>
+                <elementReference>prospectSub</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Campaign__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Copy_2_of_Update_Campaign</name>
+        <label>Copy 2 of Update Campaign</label>
+        <locationX>578</locationX>
+        <locationY>395</locationY>
+        <connector>
+            <targetReference>Get_Account_of_this_related_opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Campaign__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Closed_Won__c</field>
+            <value>
+                <elementReference>closedWonSub</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Campaign__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Copy_3_of_Update_Campaign</name>
+        <label>Copy 3 of Update Campaign</label>
+        <locationX>842</locationX>
+        <locationY>395</locationY>
+        <connector>
+            <targetReference>Get_Account_of_this_related_opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Campaign__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Closed_Lost__c</field>
+            <value>
+                <elementReference>closedLostSub</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Campaign__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Highest Priority Opportunity is there.</description>
+        <name>Update_Account_as_Existing_Client</name>
+        <label>Update Account as Existing Client</label>
+        <locationX>512</locationX>
+        <locationY>1019</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Account_of_this_related_opportunity.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>TTN_Relation_Type__c</field>
+            <value>
+                <stringValue>Existing Client</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Account</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>As there is no opportunity linked to it.</description>
+        <name>Update_Account_as_No_Relation</name>
+        <label>Update Account as No Relation</label>
+        <locationX>776</locationX>
+        <locationY>911</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Account_of_this_related_opportunity.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>TTN_Relation_Type__c</field>
+            <value>
+                <stringValue>No Relation</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Account</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>As there is no opportunity linked to it.</description>
+        <name>Update_Account_as_No_Relation_1</name>
+        <label>Update Account as No Relation</label>
+        <locationX>248</locationX>
+        <locationY>1019</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Account_of_this_related_opportunity.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>TTN_Relation_Type__c</field>
+            <value>
+                <stringValue>No Relation</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Account</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Campaign</name>
+        <label>Update Campaign</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <connector>
+            <targetReference>Get_Account_of_this_related_opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Campaign__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>SAL__c</field>
+            <value>
+                <elementReference>salSub</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Campaign__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>452</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Stage_Of_Opportunity</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>Delete</recordTriggerType>
+        <triggerType>RecordBeforeDelete</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
